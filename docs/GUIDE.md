@@ -1,6 +1,6 @@
-# NotchVeil · 隐海
+# NotchVeil user guide
 
-[简体中文](README.md) | English
+[Project overview](../README.md) · English | [中文](GUIDE.zh-CN.md)
 
 **Version 0.2.0** — a native Swift, AppKit, and SwiftUI menu bar utility that blends a MacBook notch into a black wallpaper edge. Independently implemented from LiuHai's publicly described features, with original code, branding, icon, and interface.
 
@@ -15,7 +15,7 @@ Requires **macOS 13+ and Apple Silicon**. The downloadable build is arm64. M4 an
 
 The downloadable app has an **ad-hoc signature and is not Apple-notarized**. macOS may block a downloaded build. Follow the system's Privacy & Security prompts to allow it, or build from source locally. You do not need to disable Gatekeeper.
 
-![English settings](docs/settings-preview-en.png)
+![English settings](settings-preview-en.png)
 
 ## Language
 
@@ -73,7 +73,7 @@ dist/NotchVeil.app/Contents/MacOS/NotchVeil --smoke-test docs/smoke-recovery
 
 This **temporarily changes the current notched display's wallpaper and restores it**, keeping a durable journal in the supplied directory. It does not capture the desktop or verify final menu bar tint. If interrupted, select the original wallpaper in System Settings; its `originalURL` is recorded in the journal.
 
-See [verification notes](docs/VERIFICATION.md) for checks actually performed and remaining manual acceptance cases. See [release notes](docs/RELEASE-v0.2.0.md) for 0.2.0 changes.
+See [verification notes](VERIFICATION.md) for checks actually performed and remaining manual acceptance cases. See [release notes](RELEASE-v0.2.0.md) for 0.2.0 changes.
 
 ## References
 
