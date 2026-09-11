@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "bootstrap-sha": "f9c463c2f9b78fc7cf0caa60ca6e9ac021d9f380",
+  "packages": {
+    ".": {
+      "release-type": "simple",
+      "package-name": "NotchVeil",
+      "include-component-in-tag": false,
+      "bump-minor-pre-major": true,
+      "draft": true,
+      "force-tag-creation": true,
+      "prerelease": true,
+      "extra-files": [{ "type": "generic", "path": "Resources/Info.plist" }]
+    }
+  }
+}

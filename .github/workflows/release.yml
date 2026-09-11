@@ -1,0 +1,86 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Optional: retry packaging an existing DRAFT release (vX.Y.Z)"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-main
+  cancel-in-progress: false
+
+jobs:
+  proposal:
+    name: Release proposal
+    if: github.ref == 'refs/heads/main' && inputs.tag == ''
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      actions: write
+    outputs:
+      created: ${{ steps.release.outputs.release_created }}
+      tag: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+      # GITHUB_TOKEN-created PRs may require approval before PR workflows run.
+      # Explicit workflow_dispatch runs CI without a personal token.
+      - name: Run CI on generated release PRs
+        if: steps.release.outputs.prs_created == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_PRS: ${{ steps.release.outputs.prs }}
+        run: |
+          while IFS= read -r branch; do
+            gh workflow run ci.yml --ref "$branch"
+          done < <(printf '%s' "$RELEASE_PRS" | jq -r '.[].headBranchName')
+
+  publish:
+    name: Package and publish
+    needs: proposal
+    if: >-
+      always() && !cancelled() && github.ref == 'refs/heads/main' &&
+      (needs.proposal.outputs.created == 'true' ||
+       (github.event_name == 'workflow_dispatch' && inputs.tag != ''))
+    runs-on: macos-15
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    env:
+      GH_REPO: ${{ github.repository }}
+      RELEASE_TAG: ${{ needs.proposal.outputs.tag || inputs.tag }}
+    steps:
+      - name: Require an existing draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [[ "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
+          test "$(gh release view "$RELEASE_TAG" --json isDraft --jq .isDraft)" = true
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Test and package the exact release tag
+        run: |
+          test "$(uname -m)" = arm64
+          NOTCHVEIL_BUILD_NUMBER="$((GITHUB_RUN_NUMBER + 2))" bash scripts/package-release.sh "$RELEASE_TAG"
+      - name: Upload verified assets and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/publish-release.sh "$RELEASE_TAG"

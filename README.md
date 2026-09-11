@@ -6,7 +6,7 @@ Hide your MacBook notch with a black wallpaper edge. A native macOS menu bar app
 
 **macOS 13+ · Apple Silicon · MIT**
 
-[Download](https://github.com/givingwu/NotchVeil/releases) · [User guide](docs/GUIDE.md) · [Release notes](docs/RELEASE-v0.2.0.md)
+[Download](https://github.com/givingwu/NotchVeil/releases) · [User guide](docs/GUIDE.md) · [Release notes](CHANGELOG.md) · [Contributing](CONTRIBUTING.md)
 
 ## Features
 

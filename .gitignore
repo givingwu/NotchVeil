@@ -3,3 +3,5 @@ dist/
 .DS_Store
 .swiftpm/
 docs/smoke-recovery/
+node_modules/
+__pycache__/

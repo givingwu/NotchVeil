@@ -1,0 +1,21 @@
+{
+  "name": "notchveil-development",
+  "private": true,
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "prepare": "husky",
+    "commitlint": "commitlint",
+    "lint:commits": "node scripts/lint-commits.mjs",
+    "format:check": "prettier --check .github '*.{json,cjs,md}' 'scripts/**/*.mjs'",
+    "format": "prettier --write .github '*.{json,cjs,md}' 'scripts/**/*.mjs'",
+    "test:automation": "node --test scripts/tests/*.test.mjs"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "21.2.2",
+    "@commitlint/config-conventional": "21.2.2",
+    "husky": "9.1.7",
+    "prettier": "3.9.6"
+  }
+}

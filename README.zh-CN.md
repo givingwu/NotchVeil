@@ -6,7 +6,7 @@
 
 **macOS 13+ · Apple Silicon · MIT**
 
-[下载](https://github.com/givingwu/NotchVeil/releases) · [使用指南](docs/GUIDE.zh-CN.md) · [更新说明](docs/RELEASE-v0.2.0.md)
+[下载](https://github.com/givingwu/NotchVeil/releases) · [使用指南](docs/GUIDE.zh-CN.md) · [更新说明](CHANGELOG.md) · [贡献指南](CONTRIBUTING.zh-CN.md)
 
 ## 功能
 
