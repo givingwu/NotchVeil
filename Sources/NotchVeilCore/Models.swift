@@ -58,10 +58,33 @@ public struct WallpaperOptions: Codable, Equatable {
         self.red = red; self.green = green; self.blue = blue
     }
     public init(_ options: [NSWorkspace.DesktopImageOptionKey: Any]) {
-        let color = (options[.fillColor] as? NSColor)?.usingColorSpace(.sRGB) ?? .black
+        let components = Self.sRGBComponents(of: options[.fillColor] as? NSColor)
         self.init(scaling: (options[.imageScaling] as? NSNumber)?.uintValue ?? 3,
                   clipping: (options[.allowClipping] as? NSNumber)?.boolValue ?? true,
-                  red: color.redComponent, green: color.greenComponent, blue: color.blueComponent)
+                  red: components.red, green: components.green, blue: components.blue)
+    }
+    /// macOS may return a named or non-RGB color for the wallpaper fill option.
+    /// `redComponent` raises an Objective-C exception for those colors, which Swift cannot catch.
+    /// Inspecting the converted CGColor components avoids the component accessor entirely.
+    private static func sRGBComponents(of color: NSColor?) -> (red: Double, green: Double, blue: Double) {
+        if let components = color?.usingColorSpace(.sRGB)?.cgColor.components {
+            if components.count >= 3 {
+                return (Double(components[0]), Double(components[1]), Double(components[2]))
+            }
+            if components.count == 2 {
+                let white = Double(components[0])
+                return (white, white, white)
+            }
+        }
+        // Some grayscale colors do not convert through NSColor on recent macOS versions,
+        // even though their CGColor components are fully usable.
+        if let cgColor = color?.cgColor,
+           cgColor.colorSpace?.model == .monochrome,
+           let component = cgColor.components?.first {
+            let white = Double(component)
+            return (white, white, white)
+        }
+        return (0, 0, 0)
     }
     public var appKit: [NSWorkspace.DesktopImageOptionKey: Any] {
         [.imageScaling: NSNumber(value: scaling), .allowClipping: NSNumber(value: clipping),

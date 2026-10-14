@@ -113,6 +113,21 @@ struct SettingsView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }.padding(18).background(.white, in: RoundedRectangle(cornerRadius: 16))
 
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text(copy.text(.launchAtLogin)).font(.system(size: 12, weight: .medium))
+                            Text(model.launchAtLoginStatusMessage ?? copy.text(.launchAtLoginNote))
+                                .font(.system(size: 11)).foregroundStyle(model.launchAtLoginStatusMessage == nil ? muted : .orange)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        Spacer()
+                        Toggle(copy.text(.launchAtLogin), isOn: Binding(get: { model.launchAtLoginEnabled }, set: model.setLaunchAtLogin))
+                            .toggleStyle(.switch).labelsHidden().tint(accent)
+                            .accessibilityIdentifier("launchAtLogin")
+                    }
+                }.padding(18).background(.white, in: RoundedRectangle(cornerRadius: 16))
+
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
                         Text(copy.text(.connectedDisplays)).font(.system(size: 11, weight: .medium)).foregroundStyle(muted)

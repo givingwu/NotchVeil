@@ -42,7 +42,7 @@ The app saves an atomic recovery journal **before** changing the wallpaper. It p
 - macOS menu bar tint, opaque backgrounds, Reduce Transparency, and full-screen apps can affect the final appearance. In Tahoe, check **System Settings → Menu Bar → Show menu bar background** if the bar remains gray. See [Apple's menu bar documentation](https://support.apple.com/en-mide/guide/mac-help/-mchlad96d366/mac). The app does not modify this preference.
 - Full-screen, lock, and login screens are outside this version's control. HDR/wide-gamut images are rendered as SDR sRGB PNGs. NotchVeil does not change screen resolution or recover menu bar icons hidden by the notch.
 - Changes to an image file without changing its URL are not detected by periodic checks. Toggle off and on to regenerate.
-- There is no launch-at-login feature. Every launch starts disabled for predictable recovery.
+- Turn on **Open at login** in Settings to launch NotchVeil after you sign in. The veil remains off after every launch for predictable recovery; turn on **Hide the notch** when you are ready. If macOS requests approval, allow NotchVeil in **System Settings → General → Login Items**.
 
 Records and generated copies are stored in `~/Library/Application Support/NotchVeil/`. Before uninstalling, disable the effect, revisit all treated Spaces, reconnect displays, and finish restoring. Then quit and remove the app and that directory. If the original image was moved or deleted, select a wallpaper in System Settings. Historical records/copies are deliberately retained to avoid breaking references on unvisited desktops.
 

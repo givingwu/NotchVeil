@@ -47,6 +47,7 @@ func checkThrows<T>(_ expression: @autoclosure () throws -> T, file: StaticStrin
             ("Resize regeneration and failed apply accounting", engine.testResizeRegeneratesFromOriginalAndFailedApplyDoesNotClaimSuccess),
             ("Hardware safe area and display scope", renderer.testHardwareInsetAndScaleAreIndependentOfChipOrDock),
             ("Wallpaper fill/fit/stretch/center geometry", renderer.testAspectFillFitStretchAndCenterPlacement),
+            ("Safe wallpaper fill-color conversion", renderer.testWallpaperOptionColorConversionUsesSafeRGBFallback),
             ("Retina PNG pixels, band boundary and corners", renderer.testPNGHasExactRetinaBlackBandCornersAndUnchangedCenter),
             ("Unsupported image failure", renderer.testUnsupportedImageReportsActionableError),
             ("Portrait EXIF image orientation", renderer.testPortraitEXIFOrientationIsHonored),
