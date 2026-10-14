@@ -46,6 +46,7 @@
 "launchAtLogin" = "登录时打开";
 "launchAtLoginNote" = "登录后自动启动隐海；为确保壁纸恢复安全，隐藏刘海默认保持关闭。";
 "launchAtLoginApproval" = "请在“系统设置 → 通用 → 登录项”中允许隐海，以完成启用。";
+"launchAtLoginUnavailable" = "macOS 无法将隐海配置为登录项。请将它移到“应用程序”文件夹后重新打开，再试一次。";
 "statusError" = "需要处理";
 "statusHidden" = "已隐藏刘海";
 "statusWaiting" = "等待适用屏幕";
