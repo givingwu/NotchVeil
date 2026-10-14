@@ -43,6 +43,9 @@
 "language" = "Language";
 "languageSystem" = "System";
 "languageNote" = "Follows your system by default. Changes apply immediately.";
+"launchAtLogin" = "Open at login";
+"launchAtLoginNote" = "Starts NotchVeil after you sign in. The veil stays off until you turn it on.";
+"launchAtLoginApproval" = "Allow NotchVeil in System Settings → General → Login Items to finish enabling it.";
 "statusError" = "Needs attention";
 "statusHidden" = "Notch hidden";
 "statusWaiting" = "Waiting for a display";

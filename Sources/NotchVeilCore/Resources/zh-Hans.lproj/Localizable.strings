@@ -43,6 +43,9 @@
 "language" = "界面语言";
 "languageSystem" = "跟随系统";
 "languageNote" = "默认跟随系统语言，切换后立即生效。";
+"launchAtLogin" = "登录时打开";
+"launchAtLoginNote" = "登录后自动启动隐海；为确保壁纸恢复安全，隐藏刘海默认保持关闭。";
+"launchAtLoginApproval" = "请在“系统设置 → 通用 → 登录项”中允许隐海，以完成启用。";
 "statusError" = "需要处理";
 "statusHidden" = "已隐藏刘海";
 "statusWaiting" = "等待适用屏幕";

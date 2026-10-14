@@ -29,6 +29,17 @@ final class WallpaperRendererTests {
                                                  options: WallpaperOptions(scaling: NSImageScaling.scaleNone.rawValue)),
                        CGRect(x: 40, y: 40, width: 20, height: 20))
     }
+    func testWallpaperOptionColorConversionUsesSafeRGBFallback() {
+        let color = NSColor(srgbRed: 0.35, green: 0.4, blue: 0.45, alpha: 1)
+        let options = WallpaperOptions([.fillColor: color])
+        checkTrue(abs(options.red - 0.35) < 0.01)
+        checkTrue(abs(options.green - 0.4) < 0.01)
+        checkTrue(abs(options.blue - 0.45) < 0.01)
+        let unsupported = WallpaperOptions([.fillColor: NSColor(patternImage: NSImage(size: CGSize(width: 1, height: 1)))])
+        checkEqual(unsupported.red, 0)
+        checkEqual(unsupported.green, 0)
+        checkEqual(unsupported.blue, 0)
+    }
     func testPNGHasExactRetinaBlackBandCornersAndUnchangedCenter() throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)

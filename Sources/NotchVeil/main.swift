@@ -10,6 +10,10 @@ func option(_ name: String) -> String? {
 }
 if arguments.contains("--diagnostics") {
     // Read-only: never initializes AppModel or recovery engine.
+    // NSWorkspace's display APIs require the AppKit application to be registered first.
+    // Without this, macOS 26 aborts a bundled command-line diagnostic before it can report.
+    let app = NSApplication.shared
+    app.setActivationPolicy(.prohibited)
     let client = SystemDesktopClient()
     let diagnostics = client.displays.map { display -> [String: Any] in
         ["name": display.name, "builtIn": display.isBuiltIn, "hasNotch": display.hasNotch,
@@ -23,6 +27,8 @@ if arguments.contains("--diagnostics") {
 } else if let index = arguments.firstIndex(of: "--smoke-test"), arguments.count > index + 1 {
     // Explicit opt-in integration check: temporarily applies to notched screens, then restores.
     // The caller chooses a durable journal location so interrupted checks remain recoverable.
+    let app = NSApplication.shared
+    app.setActivationPolicy(.prohibited)
     let client = SystemDesktopClient()
     let originals = try Dictionary(uniqueKeysWithValues: client.displays.map { ($0.id, try client.current(on: $0)) })
     guard client.displays.contains(where: \.hasNotch) else { throw VeilError.message("No notched display attached") }

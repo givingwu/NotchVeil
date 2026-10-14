@@ -1,6 +1,7 @@
 import AppKit
 import Combine
 import NotchVeilCore
+import ServiceManagement
 
 @MainActor final class AppModel: NSObject, ObservableObject {
     @Published var enabled = false
@@ -18,6 +19,9 @@ import NotchVeilCore
     }
     @Published var pendingCount = 0
     @Published var busy = false
+    @Published private(set) var launchAtLoginEnabled = false
+    @Published private(set) var launchAtLoginNeedsApproval = false
+    @Published private(set) var launchAtLoginError: Error?
     private let client = SystemDesktopClient()
     private var engine: WallpaperEngine?
     private var timer: Timer?
@@ -51,6 +55,7 @@ import NotchVeilCore
             engine = try WallpaperEngine(client: client, directory: support.appendingPathComponent("NotchVeil"))
         } catch { startupError = error }
         displays = client.displays
+        refreshLaunchAtLoginStatus()
         // Each launch starts disabled and recovers any visible wallpaper left by an interrupted run.
         if engine != nil { refresh() }
         $settings.dropFirst().debounce(for: .milliseconds(350), scheduler: RunLoop.main).sink { [weak self] value in
@@ -87,6 +92,10 @@ import NotchVeilCore
         if let startupError { return localization.describe(startupError) }
         return failures.isEmpty ? nil : failures.map { $0.description(using: localization) }.joined(separator: "\n")
     }
+    var launchAtLoginStatusMessage: String? {
+        if launchAtLoginNeedsApproval { return localization.text(.launchAtLoginApproval) }
+        return launchAtLoginError?.localizedDescription
+    }
     private func updateLocalization() {
         localization = Localization(preference: language, preferredLanguages: systemLanguages)
         onChange?()
@@ -105,6 +114,37 @@ import NotchVeilCore
         return localization.text(.statusDisabled)
     }
     func setEnabled(_ value: Bool) { enabled = value; refresh() }
+    func setLaunchAtLogin(_ value: Bool) {
+        let service = SMAppService.mainApp
+        do {
+            if value {
+                if service.status == .notRegistered { try service.register() }
+            } else if service.status != .notRegistered {
+                try service.unregister()
+            }
+            launchAtLoginError = nil
+        } catch {
+            launchAtLoginError = error
+        }
+        refreshLaunchAtLoginStatus()
+        onChange?()
+    }
+    private func refreshLaunchAtLoginStatus() {
+        switch SMAppService.mainApp.status {
+        case .enabled:
+            launchAtLoginEnabled = true
+            launchAtLoginNeedsApproval = false
+        case .requiresApproval:
+            launchAtLoginEnabled = false
+            launchAtLoginNeedsApproval = true
+        case .notRegistered, .notFound:
+            launchAtLoginEnabled = false
+            launchAtLoginNeedsApproval = false
+        @unknown default:
+            launchAtLoginEnabled = false
+            launchAtLoginNeedsApproval = false
+        }
+    }
     func refresh() {
         guard !previewMode else { return }
         displays = client.displays
