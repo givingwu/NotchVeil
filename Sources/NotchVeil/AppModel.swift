@@ -21,6 +21,7 @@ import ServiceManagement
     @Published var busy = false
     @Published private(set) var launchAtLoginEnabled = false
     @Published private(set) var launchAtLoginNeedsApproval = false
+    @Published private(set) var launchAtLoginUnavailable = false
     @Published private(set) var launchAtLoginError: Error?
     private let client = SystemDesktopClient()
     private var engine: WallpaperEngine?
@@ -70,6 +71,8 @@ import ServiceManagement
                                                name: NSApplication.didChangeScreenParametersNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(localeChanged),
                                                name: NSLocale.currentLocaleDidChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive),
+                                               name: NSApplication.didBecomeActiveNotification, object: nil)
         // There is no documented wallpaper-change notification. This only compares URLs while
         // enabled; unchanged wallpapers return immediately without re-rendering or writing.
         timer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { [weak self] _ in
@@ -93,6 +96,7 @@ import ServiceManagement
         return failures.isEmpty ? nil : failures.map { $0.description(using: localization) }.joined(separator: "\n")
     }
     var launchAtLoginStatusMessage: String? {
+        if launchAtLoginUnavailable { return localization.text(.launchAtLoginUnavailable) }
         if launchAtLoginNeedsApproval { return localization.text(.launchAtLoginApproval) }
         return launchAtLoginError?.localizedDescription
     }
@@ -103,6 +107,11 @@ import ServiceManagement
     @objc private func localeChanged(_ notification: Notification) {
         systemLanguages = Locale.preferredLanguages
         updateLocalization()
+    }
+    @objc private func applicationDidBecomeActive(_ notification: Notification) {
+        guard !previewMode else { return }
+        refreshLaunchAtLoginStatus()
+        onChange?()
     }
     func displayName(_ display: DisplayInfo) -> String {
         display.isBuiltIn ? localization.text(.builtInDisplayName) : display.name
@@ -118,7 +127,7 @@ import ServiceManagement
         let service = SMAppService.mainApp
         do {
             if value {
-                if service.status == .notRegistered { try service.register() }
+                if service.status == .notRegistered || service.status == .notFound { try service.register() }
             } else if service.status != .notRegistered {
                 try service.unregister()
             }
@@ -134,15 +143,23 @@ import ServiceManagement
         case .enabled:
             launchAtLoginEnabled = true
             launchAtLoginNeedsApproval = false
+            launchAtLoginUnavailable = false
         case .requiresApproval:
             launchAtLoginEnabled = false
             launchAtLoginNeedsApproval = true
-        case .notRegistered, .notFound:
+            launchAtLoginUnavailable = false
+        case .notRegistered:
             launchAtLoginEnabled = false
             launchAtLoginNeedsApproval = false
+            launchAtLoginUnavailable = false
+        case .notFound:
+            launchAtLoginEnabled = false
+            launchAtLoginNeedsApproval = false
+            launchAtLoginUnavailable = true
         @unknown default:
             launchAtLoginEnabled = false
             launchAtLoginNeedsApproval = false
+            launchAtLoginUnavailable = true
         }
     }
     func refresh() {

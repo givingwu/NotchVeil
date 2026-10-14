@@ -44,7 +44,7 @@ public enum TextKey: String, CaseIterable {
     case restoreNote, dynamicRestoreNote, compatibilityNote, privacyNote, restoreAndQuit
     case previewAccessibility, previewMenus, previewDate, previewQuiet, previewWallpaper
     case previewHiddenAccessibility, previewOriginalAccessibility, previewDisplayName
-    case language, languageSystem, languageNote, launchAtLogin, launchAtLoginNote, launchAtLoginApproval
+    case language, languageSystem, languageNote, launchAtLogin, launchAtLoginNote, launchAtLoginApproval, launchAtLoginUnavailable
     case statusError, statusHidden, statusWaiting, statusDisabled
     case menuStatus, statusTooltip, settingsAndPreview, reapply, restoreWallpaperAndQuit, quitApp
     case recoveryAlertTitle, recoveryAlertBody, stayAndRestore, keepRecordsAndQuit
